@@ -1,0 +1,94 @@
+const Note = require('../models/Note');
+
+const createNote = async (noteData) => {
+    if (Array.isArray(noteData)) {
+        return  await Note.insertMany(noteData);
+    }
+    return await Note.create(noteData);
+};
+const getAllNotes = async (filters, pagination) => {
+    const query = { isDeleted: { $ne: true }};
+     if (filters.tags) {
+        query.tags = filters.tags
+     }
+     if (filters.isPinned) {
+        query.isPinned = filters.isPinned === 'true';
+     }
+     if (filters.isArchived) {
+        query.isArchived = filters.isArchived == 'true';
+     }
+     if (filters.isTrashed) {
+        query.isTrashed = filters.isTrashed == 'true';
+     }
+     if (filters.search) {
+        const searchRegex = new RegExp(filters.search, 'i');
+        query.$or = [
+            { title: searchRegex },
+            { content: searchRegex },
+            { tags: searchRegex }
+        ];
+     }
+    const page = Math.max(parseInt(pagination.page,10)|| 1, 1);// Math.min is used to ensure that the page is at most 100, and Math.max is used to ensure that the page is at least 1.
+    const limit = Math.max(Math.min(parseInt(pagination.limit,10)|| 10, 100), 1);
+    const skip = (page - 1) * limit;
+    const [notes, totalCount] = await Promise.all([
+        Note.find(query).sort({createdAt: -1}).skip(skip).limit(limit),
+        Note.countDocuments(query)
+    ]);
+const totalPages = Math.ceil(totalCount/limit);
+
+return {
+    notes,
+    pagination:{
+        currentPage:page,
+        limit,
+        totalCount,
+        totalPages,
+        hasNextPage: page<totalPages,
+        hasPrevPage: page>1,
+    }
+ };
+};
+
+
+const getNoteById = async (id) => {
+    const note = await Note.findOne({_id: id, isDeleted: false});
+    return note;
+};
+const updateNote = async (id, notedata) => {
+    // converting to key,value pair with object.entries and filter them for those with value is undefined and then convert back to object with object.fromEntries
+    const tempFields = Object.entries(notedata).filter(([, value]) => value !== undefined);
+    const UpdateFields = Object.fromEntries(tempFields);//converting back to object from key,value pair
+    const note = await Note.findOneAndUpdate(
+        {_id: id, isDeleted: fasle},
+        UpdateFields, {
+        new: true,
+        runValidators: true,
+    });
+    return note;
+};
+
+const deleteNote = async (id) => {
+    const note = await Note.findOneAndUpdate(
+        {_id: id, isDeleted: false},
+        {isDeleted: true, deletedAt: new Date() },
+        {new: true }
+    );
+    return note;
+};
+const restoreNote = async(id) => {
+    const note = await Note.findOneAndUpdate(
+        {_id:id, isDeleted: true},
+        {isDeleted: false, deletedAt: null},
+        {new: true }
+    );
+    return note
+}
+module.exports = {
+    createNote,
+    getAllNotes,
+    getNoteById,
+    updateNote,
+    deleteNote,
+    restoreNote
+    };

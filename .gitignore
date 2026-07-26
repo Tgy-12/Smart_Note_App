@@ -1,0 +1,11 @@
+#Dependencies
+node_modules/
+
+#Environmet
+.env
+
+#logs
+logs/
+
+#Testing
+src/scripts/
