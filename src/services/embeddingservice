@@ -1,0 +1,27 @@
+const { pipeline } = require('@huggingface/transformers');
+
+const MODEL_NAME = 'Xenova/all-MiniLM-L6-v2';
+
+let embedderInstance = null;
+
+const getEmbedder = async () => {
+  if (!embedderInstance) {
+    embedderInstance = await pipeline('feature-extraction', MODEL_NAME);
+  }
+  return embedderInstance;
+};
+
+const generateEmbedding = async (text) => {
+  const embedder = await getEmbedder();
+
+  const output = await embedder (text, {
+    pooling:'mean',
+    normalize:true
+  });
+
+  return Array.from(output.data);
+};
+
+module.exports = {
+  generateEmbedding,
+};

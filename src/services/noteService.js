@@ -1,10 +1,18 @@
-const Note = require('../models/Note');
+const Note = require('./../models/Note');
+const chunkService = require('./chunkServices');
+const logger =  require('./../config/logger');
 
 const createNote = async (noteData) => {
     if (Array.isArray(noteData)) {
-        return  await Note.insertMany(noteData);
+         const notes = await Note.insertMany(noteData);
+         for (const note of notes) {
+            await chunkService.createChunksForNote(note)
+         }
+         return notes;
     }
-    return await Note.create(noteData);
+    const note =  await Note.create(noteData);
+    await chunkService.createChunksForNote(note);
+    return note;
 };
 const getAllNotes = async (filters, pagination) => {
     const query = { isDeleted: { $ne: true }};
@@ -60,13 +68,18 @@ const updateNote = async (id, notedata) => {
     const tempFields = Object.entries(notedata).filter(([, value]) => value !== undefined);
     const UpdateFields = Object.fromEntries(tempFields);//converting back to object from key,value pair
     const note = await Note.findOneAndUpdate(
-        {_id: id, isDeleted: fasle},
+        {_id: id, isDeleted: false},
         UpdateFields, {
         new: true,
         runValidators: true,
     });
+    if (note && UpdateFields.content !== undefined) {
+        logger.info(`updatin exasting note of id: ${note._id} \re-chunking--re-Embeding`);
+      await chunkService.createChunksForNote(note)
+    };
     return note;
 };
+
 
 const deleteNote = async (id) => {
     const note = await Note.findOneAndUpdate(

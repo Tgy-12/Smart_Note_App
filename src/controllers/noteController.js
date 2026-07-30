@@ -1,6 +1,6 @@
-const asyncHandler = require('../utils/asyncHandler');
-const noteService = require('../services/noteService');
-const ApiError = require('../utils/ApiError');
+const asyncHandler = require('./../utils/asyncHandler');
+const noteService = require('./../services/noteService');
+const ApiError = require('./../utils/ApiError');
 
 const createNoteV = async (req, res) => {
 
