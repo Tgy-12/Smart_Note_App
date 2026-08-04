@@ -38,7 +38,13 @@ const noteSchema = new mongoose.Schema(
       default: null,
     },
 
-  },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      index: true,
+    },
+},
   {
     timestamps: true,
   }

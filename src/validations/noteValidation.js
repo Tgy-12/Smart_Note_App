@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require('Joi');
 
 const noteObjectSchema = Joi.object({
     title:Joi.string().trim().max(200).required(),

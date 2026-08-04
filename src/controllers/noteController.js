@@ -5,7 +5,8 @@ const ApiError = require('./../utils/ApiError');
 const createNoteV = async (req, res) => {
 
     const isBulk = Array.isArray(req.body);
-    const note = await noteService.createNote(req.body);
+    const noteData = isBulk ? req.body.map((note) => ({ ...note, userId: req.user.id })) : { ...req.body, userId: req.user.id };
+    const note = await noteService.createNote( noteData);
     res.status(201).json({
         status: true,
         message: isBulk
@@ -16,7 +17,8 @@ const createNoteV = async (req, res) => {
 };
 const getAllNotesV = async (req, res) => {
     const { tags, isPinned, isArchived, isTrashed, search, page, limit } = req.query;
-    const filters = { tags, isPinned, isArchived, isTrashed, search };
+
+    const filters = { tags, isPinned, isArchived, userId: req.user.id, isTrashed, search };
     const pages = { page, limit };
     const result = await noteService.getAllNotes(filters, pages);
     res.status(200).json({
@@ -29,7 +31,7 @@ const getAllNotesV = async (req, res) => {
 };
 const getNoteByIdV = async (req, res) => {
     const {id } = req.params;
-    const note = await noteService.getNoteById(id);
+    const note = await noteService.getNoteById(id, req.user.id);
     if (!note) {
         throw new ApiError(404, `Note not found with id ${id}`);
     }
@@ -41,9 +43,9 @@ const getNoteByIdV = async (req, res) => {
 };
 const updateNoteV = async (req, res) => {
     const { id } = req.params;
-    const { title, content, tags, isPinned, isArchived } = req.body;
-    const notedatta = { title, content, tags, isPinned, isArchived };
-    const note = await noteService.updateNote(id, notedatta);
+    //const { title, content, tags, isPinned, isArchived } = req.body;
+   // const notedatta = { title, content, tags, //isPinned, isArchived };
+    const note = await noteService.updateNote(id, req.body, req.user.id);
     if (!note) {
         throw new ApiError(404, `Note not found with id ${id}`);
     }
@@ -55,7 +57,7 @@ const updateNoteV = async (req, res) => {
 };
 const deleteNoteV = async (req, res) => {
     const { id } = req.params;
-    const note = await noteService.deleteNote(id);
+    const note = await noteService.deleteNote(id, req.user.id);
     if (!note) {
         throw new ApiError(404, `Note not found with id ${id}`);
     }
@@ -67,7 +69,7 @@ const deleteNoteV = async (req, res) => {
 };
 const restoreNoteV = async(req, res)=>{
     const { id } = req.params;
-    const note = await noteService.restoreNote(id);
+    const note = await noteService.restoreNote(id, req.user.id);
     if (!note) {
         throw new ApiError(404, `No deleted Note is found with the id of ${id}`)
     }

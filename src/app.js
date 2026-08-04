@@ -3,6 +3,7 @@ require("dotenv").config();
 const express = require('express');
 const notFound = require('./middlewares/notFound');
 const errorHandler = require('./middlewares/errorHandler');
+const authRoutes = require('./routes/authRoute');
 const noteRoutes = require('./routes/noteRoutes');
 const morganMiddleWare = require('./config/morganLogger');
 
@@ -16,10 +17,11 @@ app.get('/api/v1/health', (req, res) => {
   res.status(200).json({
     status: true,
     message: 'Server is healthy...'
-  })
-})
+  });
+});
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/notes", noteRoutes);
-12491794
+
 app.use(notFound);
 app.use(errorHandler);
 

@@ -7,12 +7,12 @@ const semanticSearchV = async (req, res)=>{
     const {q, topK} = req.query;
 
     if (!q || q.trim().length === 0) {
-        throw new ApiError(400, 'The query parameter is required!');
+        throw new ApiError(400, 'The query parameter "q" is required!');
     };
 
     const parsedTopK = Math.min(Math.max(parseInt(topK, 10) ||5, 1), 20);
 
-    const results =  await searchServices.semanticSearch(q, parsedTopK);
+    const results =  await searchServices.semanticSearch(q, parsedTopK, req.user.id);
 
     res.status(200).json({
         status: true,

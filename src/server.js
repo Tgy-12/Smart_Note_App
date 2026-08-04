@@ -15,5 +15,6 @@ const startServer = async () => {
     server.close(() => process.exit(1));
   });
 };
+
 startServer();
 //find . -path ./node_modules -prune -o -name "*.js" -print uses to output all the file strutcutre of a project
