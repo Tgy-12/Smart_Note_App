@@ -2,7 +2,7 @@
 
 A Node.js/Express/MongoDB backend powering a full-stack RAG (Retrieval-Augmented Generation) note-taking system — built as a portfolio project for a transition into GenAI/RAG engineering, with an emphasis on deep architectural understanding over speed of assembly.
 
-This is the API layer. The React frontend that consumes it lives here: **[smart-notes-ui](#)** ← replace with your actual frontend repo link.
+This is the API layer. The React frontend that consumes it lives here: **[smart-notes-ui](https://www.github.com/Tgy-12/Smart_Note_UI)** 
 
 > **Note on RAG completeness:** this API implements the **Retrieval** half of RAG end-to-end, entirely from scratch — text chunking, local embedding generation, and in-process cosine-similarity semantic search with source attribution. No third-party AI APIs and no managed vector database are used. LLM-based answer synthesis (the **Generation** half) is on the roadmap and not yet built. See [Roadmap](#roadmap).
 
