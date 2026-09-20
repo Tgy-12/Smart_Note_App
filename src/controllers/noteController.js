@@ -1,6 +1,7 @@
 const asyncHandler = require('./../utils/asyncHandler');
 const noteService = require('./../services/noteService');
 const ApiError = require('./../utils/ApiError');
+const extractText = require('./../utils/extractText');
 
 const createNoteV = async (req, res) => {
 
@@ -16,9 +17,9 @@ const createNoteV = async (req, res) => {
     });
 };
 const getAllNotesV = async (req, res) => {
-    const { tags, isPinned, isArchived, isTrashed, search, page, limit } = req.query;
+    const { tag, isPinned, isArchived, isTrashed, search, page, limit } = req.query;
 
-    const filters = { tags, isPinned, isArchived, userId: req.user.id, isTrashed, search };
+    const filters = { tags: tag, isPinned, isArchived, userId: req.user.id, isTrashed, search };
     const pages = { page, limit };
     const result = await noteService.getAllNotes(filters, pages);
     res.status(200).json({
@@ -79,11 +80,32 @@ const restoreNoteV = async(req, res)=>{
         data: note,
     });
 };
+
+const uploadNoteV = async (req, res) => {
+  if (!req.file) {
+    throw new ApiError(400, 'No file uploaded. Use field name "file".');
+  }
+
+  const extractedText = await extractText(req.file);
+  const note = await noteService.createNoteFromFile(
+    extractedText,
+    req.file.originalname,
+    req.user.id
+  );
+
+  res.status(201).json({
+    status: true,
+    message: "File uploaded and note created successfully",
+    data: note,
+  });
+};
+
 const createNote = asyncHandler(createNoteV);
 const getAllNotes = asyncHandler(getAllNotesV);
 const getNoteById = asyncHandler(getNoteByIdV);
 const updateNote = asyncHandler(updateNoteV);
 const deleteNote = asyncHandler(deleteNoteV);
 const restoreNote = asyncHandler(restoreNoteV);
+const uploadNote = asyncHandler(uploadNoteV);
 
-module.exports = { createNote, getAllNotes, getNoteById, updateNote, deleteNote, restoreNote };
+module.exports = { createNote, getAllNotes, getNoteById, updateNote, deleteNote, restoreNote, uploadNote };

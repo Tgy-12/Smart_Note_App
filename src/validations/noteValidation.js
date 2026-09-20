@@ -14,14 +14,16 @@ const createNoteSchema = Joi.alternatives().try(noteObjectSchema,
 Joi.array().items(noteObjectSchema).min(1));
 
 const updateNoteSchema = Joi.object({
-    title:Joi.string().trim().max(200),
-    content:Joi.string().trim(),
-    tags:Joi.array().items(Joi.string().trim().max(50)),
-    isPinned:Joi.boolean(),
-    isArchived:Joi.boolean(),
-    isDeleted:Joi.boolean(),
-    updatedAt:Joi.date().default(Date.now()).optional(),
-}).min(1);
+  title: Joi.string().max(200),
+  content: Joi.string(),
+  tags: Joi.array().items(Joi.string()),
+  isPinned: Joi.boolean(),
+  isArchived: Joi.boolean(),
+})
+  .min(1)
+  .messages({
+    'object.min': 'At least one field (title, content, tags, isPinned, or isArchived) must be provided to update.',
+  });
 
 module.exports = {
     createNoteSchema,

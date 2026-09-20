@@ -1,6 +1,7 @@
 const Note = require('./../models/Note');
 const chunkService = require('./chunkServices');
 const logger =  require('./../config/logger');
+const ApiError = require('./../utils/ApiError');
 
 const createNote = async (noteData) => {
   if (Array.isArray(noteData)) {
@@ -99,12 +100,33 @@ const restoreNote = async(id, userId) => {
         {new: true }
     );
     return note
-}
+};
+
+const createNoteFromFile = async (extractedText, originalFilename, userId) => {
+  const cleanedText = extractedText.trim();
+
+  if (cleanedText.length === 0) {
+    throw new ApiError(422, `No extractable text found in "${originalFilename}"`);
+  }
+
+  const noteData = {
+    title: originalFilename,
+    content: cleanedText,
+    tags: ['uploaded'],
+    userId,
+  };
+
+  const note = await Note.create(noteData);
+  await chunkService.createChunksForNote(note);
+  return note;
+};
+
 module.exports = {
     createNote,
     getAllNotes,
     getNoteById,
     updateNote,
     deleteNote,
-    restoreNote
+    restoreNote,
+    createNoteFromFile
     };

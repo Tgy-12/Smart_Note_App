@@ -17,12 +17,13 @@ const semanticSearch = async (queryText, topK = 5, userId) => {
     .lean();
 
   const scoredChunks = allChunks
-    .filter(
-      (chunk) =>
-        chunk.noteId &&
-        chunk.noteId.isDeleted === false &&
-        chunk.noteId.userId.toString() === userId.toString()
-    )
+      .filter(
+        (chunk) =>
+          chunk.noteId &&
+          chunk.noteId.isDeleted === false &&
+          chunk.noteId.userId &&
+          chunk.noteId.userId.toString() === userId.toString()
+      )
     .map((chunk) =>({
         chunkId: chunk._id,
         text: chunk.text,
@@ -32,7 +33,7 @@ const semanticSearch = async (queryText, topK = 5, userId) => {
             title: chunk.noteId.title,
             tags: chunk.noteId.tags,
         },
-        score: cosineSimilarity(queryEmbbeding,  chunk.embedding)
+        score: cosineSimilarity(queryEmbedding,  chunk.embedding)
       }));
 
       scoredChunks.sort((a, b) => b.score - a.score);

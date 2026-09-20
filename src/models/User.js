@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
         trim:true,
         unique:true,
         lowercase:true,
-        match:[/^\S+@\S+\.\S+$/, 'Please provide valid email...']
+        match:[/^\S+@\S+\.\S+$/, 'what an email🤩, Enter valid one...']
     },
     password:{
         type:String,
@@ -20,7 +20,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Name is required'],
         trim: true,
-    }
+    },
+    bio: {
+        type: String,
+        maxLength: 300,
+        default: '',
+    },
+    avatarUrl: {
+        type: String,
+        default: null
+}
 },
 {
     timestamps: true,
@@ -29,7 +38,6 @@ userSchema.pre('save', async function hashPassword() {
   if (!this.isModified('password')) {
     return;
   }
-
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
  // next();

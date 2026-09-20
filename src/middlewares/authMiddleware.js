@@ -11,7 +11,7 @@ const protect = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, 'Not authorized, no token provided');
   }
 
-  const token = authHeader.split(' ')[1];
+  const token = authHeader.split(' ')[1];//splits the Bearer part
 
   let decoded;
   try {
