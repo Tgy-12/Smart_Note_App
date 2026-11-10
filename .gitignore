@@ -1,18 +1,27 @@
 #Dependencies
 node_modules/
+postman/
+
 
 #Environmet
 .env
 
 #logs
 logs/
+postman/
+.postman
+.foam/queries
+src/.postman
 
 #Testing
 src/scripts/
 
-#uncomplted
-
+#uncompleted
 
 #image files or pathes
 uploads/
 uploads/avatars/
+
+#storages
+.vscode
+.pycach
