@@ -1,50 +1,83 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
-const userSchema = new mongoose.Schema({
-    email:{
-        type:String,
-        required:[true, 'Email is required'],
-        trim:true,
-        unique:true,
-        lowercase:true,
-        match:[/^\S+@\S+\.\S+$/, 'what an email🤩, Enter valid one...']
+const userSchema = new mongoose.Schema(
+  {
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      trim: true,
+      unique: true,
+      lowercase: true,
+      match: [/^\S+@\S+\.\S+$/, "what an email🤩, Enter valid one..."],
     },
-    password:{
-        type:String,
-        required:[true, 'password is required'],
-        minLength: [8, 'A minimum of 8 characters required.'],
-        select: false,
+    password: {
+      type: String,
+      required: [true, "password is required"],
+      minLength: [8, "A minimum of 8 characters required."],
+      select: false,
     },
     name: {
-        type: String,
-        required: [true, 'Name is required'],
-        trim: true,
+      type: String,
+      required: [true, "Name is required"],
+      trim: true,
     },
     bio: {
-        type: String,
-        maxLength: 300,
-        default: '',
+      type: String,
+      maxLength: 300,
+      default: "",
     },
     avatarUrl: {
-        type: String,
-        default: null
-}
-},
-{
+      type: String,
+      default: null,
+    },
+  },
+
+  {
     timestamps: true,
-});
-userSchema.pre('save', async function hashPassword() {
-  if (!this.isModified('password')) {
+  },
+);
+userSchema.pre("save", async function hashPassword() {
+  if (!this.isModified("password")) {
     return;
   }
+
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
- // next();
+  // next();
 });
-userSchema.methods.comparePassword = async function comparePassword(candidatePassword){
-    return bcrypt.compare(candidatePassword, this.password);
+userSchema.methods.comparePassword = async function comparePassword(
+  candidatePassword,
+) {
+  return bcrypt.compare(candidatePassword, this.password);
 };
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+//for log out portion
+const revokedTokenSchema = new mongoose.Schema(
+  {
+    jti: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    expiresAt: {
+      type: Date,
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+revokedTokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+//const User = mongoose.model("User", userSchema);
+const RevokedToken = mongoose.model("RevokedToken", revokedTokenSchema);
+
+module.exports = { User, RevokedToken };

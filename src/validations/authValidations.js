@@ -1,4 +1,4 @@
-const Joi = require('Joi');
+const Joi = require("joi");
 
 const registerSchema = Joi.object({
   name: Joi.string().trim().required(),
@@ -13,17 +13,16 @@ const loginSchema = Joi.object({
 
 const updateProfileSchema = Joi.object({
   name: Joi.string().min(1).max(100),
-  bio: Joi.string().max(300).allow(''),
+  bio: Joi.string().max(300).allow(""),
 })
   .min(1)
   .messages({
-    'object.min': 'At least one field (name or bio) must be provided to update.',
+    "object.min":
+      "At least one field (name or bio) must be provided to update.",
   });
 
 module.exports = {
   registerSchema,
   loginSchema,
-  updateProfileSchema
+  updateProfileSchema,
 };
-
-
