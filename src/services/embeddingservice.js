@@ -1,5 +1,5 @@
 const { pipeline } = require('@huggingface/transformers');
-const ApiError = require("./../utils/ApiError");
+const ApiError = require("../utils/ApiError");
 
 const MODEL_NAME = 'Xenova/all-MiniLM-L6-v2';
 
