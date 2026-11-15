@@ -12,9 +12,11 @@ postman/
 .postman
 .foam/queries
 src/.postman
+jar.txt
 
 #Testing
 src/scripts/
+
 
 #uncompleted
 

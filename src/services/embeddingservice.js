@@ -1,23 +1,23 @@
-const { pipeline } = require('@huggingface/transformers');
+const { pipeline } = require("@huggingface/transformers");
 const ApiError = require("../utils/ApiError");
 
-const MODEL_NAME = 'Xenova/all-MiniLM-L6-v2';
+const MODEL_NAME = "Xenova/all-MiniLM-L6-v2";
 
 let embedderInstance = null;
 const getEmbedder = async () => {
   if (!embedderInstance) {
-    embedderInstance = await pipeline('feature-extraction', MODEL_NAME);
+    embedderInstance = await pipeline("feature-extraction", MODEL_NAME);
   }
   return embedderInstance;
 };
 
 const generateEmbedding = async (text) => {
   const embedder = await getEmbedder();
-  if (!embedder) throw new ApiError('Embedder failed to initialize');
+  if (!embedder) throw new ApiError("Embedder failed to initialize");
 
   const output = await embedder(text, {
-    pooling: 'mean',
-    normalize: true
+    pooling: "mean",
+    normalize: true,
   });
 
   return Array.from(output.data);

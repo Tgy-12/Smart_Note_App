@@ -1,4 +1,4 @@
-const authServices = require("../services/authService");
+const authService = require("../services/authService");
 const asyncHandler = require("./../utils/asyncHandler");
 const ApiError = require("./../utils/ApiError");
 const env = require("./../config/env");
@@ -24,7 +24,7 @@ const clearRefreshCookie = (res) =>
 const requestMeta = (req) => ({ userAgent: req.get("user-agent"), ip: req.ip });
 
 const registerUserV = async (req, res) => {
-  const { user, accessToken, refreshToken } = await authServices.registerUser(
+  const { user, accessToken, refreshToken } = await authService.registerUser(
     req.body,
     requestMeta(req),
   );
@@ -39,7 +39,7 @@ const registerUserV = async (req, res) => {
 };
 
 const loginUserV = async (req, res) => {
-  const { user, accessToken, refreshToken } = await authServices.loginUser(
+  const { user, accessToken, refreshToken } = await authService.loginUser(
     req.body,
     requestMeta(req),
   );
@@ -54,7 +54,7 @@ const loginUserV = async (req, res) => {
 };
 const logoutUserV = async (req, res) => {
   const { token } = req.body;
-  await authServices.logoutUser(token);
+  await authService.logoutUser(token);
   clearRefreshCookie(res);
   res.status(200).json({
     status: true,
@@ -64,7 +64,7 @@ const logoutUserV = async (req, res) => {
 };
 const updateProfileV = async (req, res) => {
   const { name, bio } = req.body;
-  const user = await authServices.updateProfileService(req.user.id, {
+  const user = await authService.updateProfileService(req.user.id, {
     name,
     bio,
   });
@@ -85,7 +85,7 @@ const uploadAvatarV = async (req, res) => {
   if (!req.file) {
     throw new ApiError(400, "No image file provided.");
   }
-  const user = await authServices.uploadAvatarService(req.user.id, req.file);
+  const user = await authService.uploadAvatarService(req.user.id, req.file);
   res.status(200).json({
     status: true,
     message: "Avatar uploaded successfully.",

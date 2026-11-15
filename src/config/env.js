@@ -12,7 +12,6 @@ const env = {
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || "7d",
 
   redisUrl: process.env.REDIS_URL || "redis://127.0.0.1:6379",
-
   //for refresh token
   refreshTokenTtlDays: Number(process.env.REFRESH_TOKEN_TTL_DAYS) || 7,
   refreshGraceSeconds: Number(process.env.REFRESH_GRACE_SECONDS) || 10,

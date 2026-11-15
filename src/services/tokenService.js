@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const RefreshToken = require("../models/refreshToken");
-const User = require("../models/User");
+const { User } = require("./../models/User");
 const env = require("../config/env");
 const logger = require("../config/logger");
 const ApiError = require("../utils/ApiError");
@@ -63,7 +63,7 @@ const rotateSession = async (rawToken, meta = {}) => {
     throw new ApiError(401, "Session expired. Please log in again.");
   }
 
-  const user = await User.findById(claimed.userId);
+  const user = await User.findById(claimed.userId); //if u get an error saying User.findById
   if (!user) {
     await revokeFamily(claimed.familyId);
     throw new ApiError(401, "Session expired. Please log in again.");

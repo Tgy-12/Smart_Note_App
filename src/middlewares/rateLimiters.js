@@ -30,7 +30,13 @@ const createLimiter = ({ prefix, windowMs, limit, message, keyGenerator }) => {
   return rateLimit(options);
 };
 
-const byUser = (req) => req.user.id.toString();
+const byUser = (req) => {
+  if (!req.user) {
+    throw new ApiError("byUser rate-limit key used on a route without prtect");
+  }
+  return req.user.id.toString();
+};
+
 const constantKey = () => "all-users";
 
 const globalLimiter = createLimiter({
@@ -83,7 +89,7 @@ const refreshLimiter = createLimiter({
   prefix: "refresh",
   windowMs: 15 * 60 * 1000,
   limit: 60,
-  keyGenerator: byUser,
+  //keyGenerator: byUser,
   message: "Too many refresh requests. Please try again later.",
 });
 
